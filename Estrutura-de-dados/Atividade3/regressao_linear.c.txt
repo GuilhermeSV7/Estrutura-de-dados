@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int x;
+    float y;
+} Ponto;
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) return 1;
+
+    FILE *arquivo = fopen(argv[1], "r");
+    if (!arquivo) return 1;
+
+    int numPontos = 0;
+    char c;
+    while ((c = fgetc(arquivo)) != EOF) {
+        if (c == '\n') numPontos++;
+    }
+    rewind(arquivo);
+
+    Ponto *pontos = (Ponto *)malloc(numPontos * sizeof(Ponto));
+    if (!pontos) return 1;
+
+    for (int i = 0; i < numPontos; i++) {
+        fscanf(arquivo, "%d,%f", &pontos[i].x, &pontos[i].y);
+    }
+
+    fclose(arquivo);
+
+    float somaX = 0, somaY = 0;
+    for (int i = 0; i < numPontos; i++) {
+        somaX += pontos[i].x;
+        somaY += pontos[i].y;
+    }
+    float mediaX = somaX / numPontos;
+    float mediaY = somaY / numPontos;
+
+    float num = 0, den = 0;
+    for (int i = 0; i < numPontos; i++) {
+        num += (pontos[i].x - mediaX) * (pontos[i].y - mediaY);
+        den += (pontos[i].x - mediaX) * (pontos[i].x - mediaX);
+    }
+    float inclinacao = num / den;
+    float intercepcao = mediaY - inclinacao * mediaX;
+
+    printf("Saída: y = %.2fx + %.2f\n", inclinacao, intercepcao);
+
+    free(pontos);
+
+    return 0;
+}
