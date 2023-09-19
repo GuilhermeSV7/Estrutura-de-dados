@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "bubble_sort.h"
+
+#define MAX_WORDS 100
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Uso: %s <nome_do_arquivo.txt>\n", argv[0]);
+        return 1;
+    }
+
+    FILE *arquivo = fopen(argv[1], "r");
+    if (arquivo == NULL) {
+        perror("Erro ao abrir o arquivo");
+        return 1;
+    }
+
+    char *palavras[MAX_WORDS];
+    char palavra[100];
+    int numPalavras = 0;
+
+    // Ler palavras do arquivo e armazená-las em um array
+    while (fgets(palavra, sizeof(palavra), arquivo)) {
+        palavra[strcspn(palavra, "\n")] = '\0';  // Remover a quebra de linha
+        palavras[numPalavras] = strdup(palavra);
+        numPalavras++;
+    }
+
+    fclose(arquivo);
+
+    // Chamar a função de ordenação
+    bubbleSort(palavras, numPalavras);
+
+    // Criar um arquivo para as palavras ordenadas
+    char *nomeArquivoOrdenado = "arq_palavras_ordenado.txt";
+    FILE *arquivoOrdenado = fopen(nomeArquivoOrdenado, "w");
+    if (arquivoOrdenado == NULL) {
+        perror("Erro ao criar o arquivo ordenado");
+        return 1;
+    }
+
+    // Escrever as palavras ordenadas no arquivo
+    for (int i = 0; i < numPalavras; i++) {
+        fprintf(arquivoOrdenado, "%s\n", palavras[i]);
+        free(palavras[i]);  // Liberar a memória alocada para a palavra
+    }
+
+    fclose(arquivoOrdenado);
+
+    printf("Saída: %s\n", nomeArquivoOrdenado);
+
+    return 0;
+}
