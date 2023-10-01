@@ -3,27 +3,51 @@
 #include "fila.h"
 
 int main() {
-    Pilha *pilha = criarPilha(5);
-    empilhar(pilha, 1);
-    empilhar(pilha, 2);
-    empilhar(pilha, 3);
+    // Cria uma fila de espera para as pessoas que chegam ao banco
+    Fila *filaDeEspera = criarFila(10);
     
-    printf("Topo: %d\n", topoDaPilha(pilha));
-    printf("Desempilhado: %d\n", desempilhar(pilha));
-    printf("Topo: %d\n", topoDaPilha(pilha));
+    // Cria uma pilha de atendimento para as pessoas que estão sendo atendidas
+    Pilha *pilhaDeAtendimento = criarPilha(10);
     
-    liberarPilha(pilha);
-
-    Fila *fila = criarFila(5);
-    enfileirar(fila, 10);
-    enfileirar(fila, 20);
-    enfileirar(fila, 30);
+    // Pessoas entram na fila de espera
+    enfileirar(filaDeEspera, 1);
+    enfileirar(filaDeEspera, 2);
+    enfileirar(filaDeEspera, 3);
     
-    printf("Frente: %d\n", frenteDaFila(fila));
-    printf("Desenfileirado: %d\n", desenfileirar(fila));
-    printf("Frente: %d\n", frenteDaFila(fila));
+    printf("Pessoas na fila de espera:\n");
     
-    liberarFila(fila);
+    // Enquanto houver pessoas na fila de espera, continua o loop
+    while (!filaVazia(filaDeEspera)) {
+        // Obtenha a primeira pessoa da fila
+        int pessoa = frenteDaFila(filaDeEspera);
+        
+        // Imprime uma mensagem indicando que a pessoa entrou na fila de espera
+        printf("Pessoa %d entrou na fila de espera.\n", pessoa);
+        
+        // Coloca a pessoa na pilha de atendimento
+        enfileirar(pilhaDeAtendimento, pessoa);
+        
+        // Remove a pessoa da fila de espera
+        desenfileirar(filaDeEspera);
+    }
+    
+    printf("\nAtendimento em andamento:\n");
+    
+    // Enquanto houver pessoas sendo atendidas, continua o loop
+    while (!pilhaVazia(pilhaDeAtendimento)) {
+        // Obtenha a pessoa no topo da pilha de atendimento
+        int pessoa = topoDaPilha(pilhaDeAtendimento);
+        
+        // Imprime uma mensagem indicando que a pessoa está sendo atendida
+        printf("Atendendo pessoa %d.\n", pessoa);
+        
+        // Remove a pessoa da pilha de atendimento
+        desempilhar(pilhaDeAtendimento);
+    }
+    
+    // Libera a memória das estruturas de dados (fila e pilha)
+    liberarFila(filaDeEspera);
+    liberarPilha(pilhaDeAtendimento);
 
     return 0;
 }
